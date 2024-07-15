@@ -1,72 +1,96 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Author\AuthorCreateRequest;
-use App\Http\Requests\Author\AuthorEditRequest;
-use App\Http\Resources\AuthorResource;
-use App\Services\AuthorService;
 use Illuminate\Http\Request;
+use App\Services\AuthorService;
+use App\Http\Requests\Author\StoreAuthorRequest;
+use App\Http\Requests\Author\UpdateAuthorRequest;
+use App\Models\Author;
 
 class AuthorController extends Controller
 {
-    public function __construct(private AuthorService $authorService)
+    protected $authorService;
+
+    public function __construct(AuthorService $authorService)
     {
+        $this->authorService = $authorService;
     }
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of the authors.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $authors = $this->authorService->all();
-        return response()->json(['message' => 'Authors Data fetched successfully', 'authors' => AuthorResource::collection($authors)], 200);
-    }
-
-
-    /**
-     * Store a newly created resource in db.
-     */
-    public function store(AuthorCreateRequest $request)
-    {
-        $this->authorService->store($request->all());
-        return response()->json(['message' => 'Author Added successfully'], 200);
+        $authors = $this->authorService->getAll();
+        return response()->json(['status' => 'success', 'message' => 'Authors retrieved successfully', 'authors' => $authors], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Store a newly created author in storage.
+     *
+     * @param  \App\Http\Requests\Author\StoreAuthorRequest  $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(string $id)
+    public function store(StoreAuthorRequest $request)
     {
-        $author = $this->authorService->show($id);
-        return response()->json(['message' => 'Author Data fetched successfully', 'author' => new AuthorResource($author)], 200);
+        $data = $request->validated();
+        $author = $this->authorService->createAuthor($data);
+
+        return response()->json(['status' => 'success', 'message' => 'Author created successfully', 'author' => $author], 201);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified author.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(string $id)
+    public function show($id)
     {
-        $author = $this->authorService->edit($id);
-        return response()->json(['message' => 'Author Data fetched successfully', 'author' => new AuthorResource($author)], 200);
+        $author = $this->authorService->getAuthorById($id);
+        if (!$author) {
+            return response()->json(['status' => 'error', 'message' => 'Author not found'], 404);
+        }
+        return response()->json(['status' => 'success', 'message' => 'Author details fetched successfully', 'author' => $author], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified author in storage.
+     *
+     * @param  \App\Http\Requests\Author\UpdateAuthorRequest  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-
-    public function update(AuthorEditRequest $request, string $id)
+    public function update(UpdateAuthorRequest $request, $id)
     {
-        $this->authorService->update($request->all(), $id);
-        return response()->json(['message' => 'Author Updated successfully'], 200);
+        $author = $this->authorService->getAuthorById($id);
+        if (!$author) {
+            return response()->json(['status' => 'error', 'message' => 'Author not found'], 404);
+        }
+        $data = $request->validated();
+        $this->authorService->updateAuthor($author, $data);
+
+        return response()->json(['status' => 'success', 'message' => 'Author updated successfully', 'author' => $author], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified author from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $this->authorService->delete($id);
-        return response()->json(['message' => 'Author Deleted successfully'], 200);
+        $author = $this->authorService->getAuthorById($id);
+        if (!$author) {
+            return response()->json(['status' => 'error', 'message' => 'Author not found'], 404);
+        }
+        $this->authorService->deleteAuthor($author);
+
+        return response()->json(['status' => 'success', 'message' => 'Author deleted successfully'], 200);
     }
 }

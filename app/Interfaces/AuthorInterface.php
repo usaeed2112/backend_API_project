@@ -4,15 +4,43 @@ namespace App\Interfaces;
 
 interface AuthorInterface
 {
-    public function all();
+    /**
+     * Get all authors.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAll();
 
-    public function show($id);
+    /**
+     * Get an author by ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function getById($id);
 
-    public function store(array $data);
+    /**
+     * Create a new author.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function create(array $data);
 
-    public function edit($id);
+    /**
+     * Update an existing author.
+     *
+     * @param  mixed  $author  // Can be an integer ID or Eloquent model instance
+     * @param  array  $data
+     * @return bool
+     */
+    public function update($author, array $data);
 
-    public function update(array $data, $id);
-
-    public function delete($id);
+    /**
+     * Delete an author.
+     *
+     * @param  mixed  $author  // Can be an integer ID or Eloquent model instance
+     * @return bool|null
+     */
+    public function delete($author);
 }

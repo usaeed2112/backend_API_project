@@ -7,6 +7,7 @@ use App\Interfaces\AuthInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthRepository implements AuthInterface
 {
@@ -42,7 +43,9 @@ class AuthRepository implements AuthInterface
     public function logout()
     {
         try {
-            auth()->invalidate(true);
+            $forever = true;
+            JWTAuth::getToken();
+            JWTAuth::invalidate($forever);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully logged out',

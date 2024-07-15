@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserLoginRequest;
@@ -20,7 +20,7 @@ class AuthController extends Controller
         $data = $request->all();
         $response =   $this->authService->register($data);
 
-        return response()->json(['message' => 'User: Registered successfully', 'data' => $response], 201);
+        return response()->json(['status' => 'success', 'message' => 'User registered successfully', 'data' => $response], 201);
     }
 
     public function login(UserLoginRequest $request)
@@ -39,13 +39,13 @@ class AuthController extends Controller
         }
 
         // Return the success response with the user data and token
-        return response()->json(['message' => 'User: logged in successfully', 'data' => $authData,], 201);
+        return response()->json(['status' => 'success', 'message' => 'Login successful', 'data' => $authData,], 201);
     }
 
 
     public function logout()
     {
-        // $this->authService->logout();
-        return response()->json(['message' => 'User: Logged out successfully'], 201);
+        $this->authService->logout();
+        return response()->json(['status' => 'success', 'message' => 'Successfully logged out'], 201);
     }
 }

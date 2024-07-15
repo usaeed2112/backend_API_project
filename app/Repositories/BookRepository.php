@@ -7,36 +7,44 @@ use App\Models\Book;
 
 class BookRepository implements BookInterface
 {
-    public function __construct(private Book $model)
+    protected $book;
+
+    public function __construct(Book $book)
     {
-    }
-    public function all()
-    {
-        return $this->model->get();
+        $this->book = $book;
     }
 
-    public function show($id)
+    public function getAll()
     {
-        return $this->model->find($id);
+        return $this->book->with('authors')->get();
     }
 
-    public function store(array $data)
+    public function getById($id)
     {
-        return $this->model->create($data);
+        return $this->book->with('authors')->findOrFail($id);
     }
 
-    public function edit($id)
+    public function create(array $data)
     {
-        return $this->model->find($id);
+        $book = $this->book->create($data);
+        if (isset($data['authors'])) {
+            $book->authors()->attach($data['authors']);
+        }
+        return $book->load('authors');
     }
 
-    public function update(array $data, $id)
+    public function update($book, array $data)
     {
-        return $this->model->find($id)->update($data);
+        $book->update($data);
+        if (isset($data['authors'])) {
+            $book->authors()->sync($data['authors']);
+        }
+        return $book->load('authors');
     }
 
-    public function delete($id)
+    public function delete($book)
     {
-        return $this->model->find($id)->delete();
+        $book->authors()->detach();
+        return $book->delete();
     }
 }

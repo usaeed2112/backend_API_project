@@ -1,72 +1,99 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Book\BookCreateRequest;
-use App\Http\Requests\Book\BookEditRequest;
-use App\Http\Resources\BookResource;
-use App\Services\BooksService;
 use Illuminate\Http\Request;
+use App\Services\BookService;
+use App\Services\AuthorService;
+use App\Http\Requests\Book\StoreBookRequest;
+use App\Http\Requests\Book\UpdateBookRequest;
+use App\Models\Book;
 
 class BookController extends Controller
 {
-    public function __construct(private BooksService $booksService)
+    protected $bookService;
+    protected $authorService;
+
+    public function __construct(BookService $bookService, AuthorService $authorService)
     {
+        $this->bookService = $bookService;
+        $this->authorService = $authorService;
     }
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of the books.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $books = $this->booksService->all();
-        return response()->json(['message' => 'Books Data found successfully', 'books' => BookResource::collection($books)], 200);
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(BookCreateRequest $request)
-    {
-        $this->booksService->store($request->all());
-        return response()->json(['message' => 'Book Added successfully'], 201);
+        $books = $this->bookService->getAllBooks();
+        return response()->json(['status' => 'success', 'message' => 'Books fetched successfully', 'books' => $books], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Store a newly created book in storage.
+     *
+     * @param  \App\Http\Requests\Book\StoreBookRequest  $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(string $id)
+    public function store(StoreBookRequest $request)
     {
-        $book = $this->booksService->show($id);
-        return response()->json(['message' => 'Book Data found successfully', 'book' => new BookResource($book)], 200);
+        $data = $request->validated();
+        $book = $this->bookService->createBook($data);
+
+        return response()->json(['status' => 'success', 'message' => 'Book created successfully', 'book' => $book], 201);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified book.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(string $id)
+    public function show($id)
     {
-        $book = $this->booksService->edit($id);
-
-        return response()->json(['message' => 'Book Data found successfully', 'book' => new BookResource($book)], 200);
+        $book = $this->bookService->getBookById($id);
+        if (!$book) {
+            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
+        }
+        return response()->json(['status' => 'success', 'message' => 'Book details fetched successfully', 'book' => $book], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified book in storage.
+     *
+     * @param  \App\Http\Requests\Book\UpdateBookRequest  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(BookEditRequest $request, string $id)
+    public function update(UpdateBookRequest $request, $id)
     {
-        $this->booksService->update($request->all(), $id);
-        return response()->json(['message' => 'Book Updated successfully'], 200);
+        $book = $this->bookService->getBookById($id);
+        if (!$book) {
+            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
+        }
+        $data = $request->validated();
+        $this->bookService->updateBook($book, $data);
+
+        return response()->json(['status' => 'success', 'message' => 'Book updated successfully', 'book' => $book], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified book from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $this->booksService->delete($id);
-        return response()->json(['message' => 'Book Deleted successfully'], 200);
+        $book = $this->bookService->getBookById($id);
+        if (!$book) {
+            return response()->json(['status' => 'error', 'message' => 'Book not found'], 404);
+        }
+        $this->bookService->deleteBook($book);
+
+        return response()->json(['status' => 'success', 'message' => 'Book deleted successfully'], 200);
     }
 }

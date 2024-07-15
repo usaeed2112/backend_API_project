@@ -1,33 +1,27 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\AuthorController;
-use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\AuthorController;
+use App\Http\Controllers\API\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-
-Route::middleware('auth:api')->group(function () {
+Route::group(['middleware' => ['auth:api']], function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::prefix('authors')->group(function () {
-        Route::get('/', [AuthorController::class, 'index']);
-        Route::post('/store', [AuthorController::class, 'store']);
-        Route::get('show/{id}', [AuthorController::class, 'show']);
-        Route::get('edit/{id}', [AuthorController::class, 'edit']);
-        Route::post('/update/{id}', [AuthorController::class, 'update']);
-        Route::delete('/delete/{id}', [AuthorController::class, 'destroy']);
-    });
-    Route::prefix('books')->group(function () {
+    // Authors routes
+    Route::get('authors', [AuthorController::class, 'index']);
+    Route::post('authors', [AuthorController::class, 'store']);
+    Route::get('authors/{id}', [AuthorController::class, 'show']);
+    Route::post('authors/{id}', [AuthorController::class, 'update']);
+    Route::delete('authors/{id}', [AuthorController::class, 'destroy']);
 
-        Route::get('/', [BookController::class, 'index']);
-        Route::post('/store', [BookController::class, 'store']);
-        Route::get('show/{id}', [BookController::class, 'show']);
-        Route::get('edit/{id}', [BookController::class, 'edit']);
-        Route::post('/update/{id}', [BookController::class, 'update']);
-        Route::delete('/delete/{id}', [BookController::class, 'destroy']);
-    });
+    // Books routes
+    Route::get('books', [BookController::class, 'index']);
+    Route::post('books', [BookController::class, 'store']);
+    Route::get('books/{id}', [BookController::class, 'show']);
+    Route::post('books/{id}', [BookController::class, 'update']);
+    Route::delete('books/{id}', [BookController::class, 'destroy']);
 });

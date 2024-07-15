@@ -2,17 +2,13 @@
 
 namespace App\Interfaces;
 
+
 interface BookInterface
 {
-    public function all();
-
-    public function show($id);
-
-    public function store(array $data);
-
-    public function edit($id);
-
-    public function update(array $data, $id);
-
-    public function delete($id);
+    public function getAll();
+    public function getById($id);
+    public function create(array $data);
+    public function update($book, array $data);
+    public function delete($book);
 }
+

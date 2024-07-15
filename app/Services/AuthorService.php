@@ -6,37 +6,35 @@ use App\Interfaces\AuthorInterface;
 
 class AuthorService
 {
-    public function __construct(private AuthorInterface $authorsInterface)
+    protected $authorRepository;
+
+    public function __construct(AuthorInterface $authorRepository)
     {
+        $this->authorRepository = $authorRepository;
     }
 
-    public function all()
+    public function getAll()
     {
-        return $this->authorsInterface->all();
+        return $this->authorRepository->getAll();
     }
 
-    public function show($id)
+    public function getAuthorById($id)
     {
-        return $this->authorsInterface->show($id);
+        return $this->authorRepository->getById($id);
     }
 
-    public function store(array $data)
+    public function createAuthor(array $data)
     {
-        return $this->authorsInterface->store($data);
+        return $this->authorRepository->create($data);
     }
 
-    public function edit($id)
+    public function updateAuthor($author, array $data)
     {
-        return $this->authorsInterface->edit($id);
+        return $this->authorRepository->update($author, $data);
     }
 
-    public function update(array $data, $id)
+    public function deleteAuthor($author)
     {
-        return $this->authorsInterface->update($data, $id);
-    }
-
-    public function delete($id)
-    {
-        return $this->authorsInterface->delete($id);
+        return $this->authorRepository->delete($author);
     }
 }

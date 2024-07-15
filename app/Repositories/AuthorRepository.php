@@ -7,36 +7,37 @@ use App\Models\Author;
 
 class AuthorRepository implements AuthorInterface
 {
-    public function __construct(private Author $model)
+    protected $author;
+
+    public function __construct(Author $author)
     {
-    }
-    public function all()
-    {
-        return $this->model->get();
+        $this->author = $author;
     }
 
-    public function show($id)
+    public function getAll()
     {
-        return $this->model->find($id);
+        return $this->author->with('books')->get();
     }
 
-    public function store(array $data)
+    public function getById($id)
     {
-        return $this->model->create($data);
+        return $this->author->with('books')->findOrFail($id);
     }
 
-    public function edit($id)
+    public function create(array $data)
     {
-        return $this->model->find($id);
+        $author = $this->author->create($data);
+        return $author->load('books');
     }
 
-    public function update(array $data, $id)
+    public function update($author, array $data)
     {
-        return $this->model->find($id)->update($data);
+        $author->update($data);
+        return $author->load('books');
     }
 
-    public function delete($id)
+    public function delete($author)
     {
-        return $this->model->find($id)->delete();
+        $author->delete();
     }
 }

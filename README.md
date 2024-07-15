@@ -1,69 +1,32 @@
-# API Project
+# Library Management System API
 
-## Project Description
+## Overview
 
-This project is a Laravel-based API providing functionalities for user authentication and management of authors and books. The API allows users to register, log in, and manage authors and books, including creating, reading, updating, and deleting records. Authentication is handled using Laravel's built-in authentication system with API tokens.
+-   This API allows users to manage authors and books in a library system.
+-   Includes endpoints for user registration, authentication, and CRUD operations for authors and books.
+-   Built using Laravel and follows the Service-Oriented Repository Design Pattern.
 
 ## Setup Instructions
 
-### Prerequisites
-
-Before setting up the project, ensure you have the following installed on your machine:
-
--   PHP >= 8.2
--   Composer
--   MySQL
--   Laravel CLI
-
-### Installation
-
-1. **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/yourusername/your-repo-name.git
-    cd your-repo-name
-    ```
-
-2. **Install dependencies:**
-
-    ```bash
-    composer install
-    ```
-
-3. **Copy the `.env.example` file to `.env`:**
-
-    ```bash
-    cp .env.example .env
-    ```
-
-4. **Generate an application key:**
-
-    ```bash
-    php artisan key:generate
-    ```
-
-5. **Configure your database settings in the `.env` file:**
-
-    ```plaintext
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=your_database_name
-    DB_USERNAME=your_database_username
-    DB_PASSWORD=your_database_password
-    ```
-
-6. **Run the database migrations:**
-
-    ```bash
-    php artisan migrate
-    ```
-
-7. **Start the development server:**
-
-    ```bash
-    php artisan serve
-    ```
+1. Clone the repository.
+    - `git clone <https://github.com/usaeed2112/backend_API_project>`
+    - `cd <backend_API_project>`
+2. Install dependencies.
+    - `composer install`
+3. Set up the environment variables.
+    - `cp .env.example .env`
+    - `php artisan key:generate`
+4. Configure the database in the `.env` file.
+    - `DB_CONNECTION=mysql`
+    - `DB_HOST=127.0.0.1`
+    - `DB_PORT=3306`
+    - `DB_DATABASE=your_database`
+    - `DB_USERNAME=your_username`
+    - `DB_PASSWORD=your_password`
+5. Run migrations.
+    - `php artisan migrate`
+6. Run the application.
+    - `php artisan serve`
 
 ## API Endpoints
 
@@ -71,128 +34,167 @@ Before setting up the project, ensure you have the following installed on your m
 
 -   **Register**
 
-    ```http
-    POST /api/register
-    ```
-
-    Registers a new user.
+    -   **URL:** `/api/register`
+    -   **Method:** `POST`
+    -   **Request Parameters:**
+        -   `name` (string, required)
+        -   `email` (string, required, unique, email)
+        -   `password` (string, required, min: 8)
+    -   **Response:**
+        -   Status: success
+        -   Message: User registered successfully
+        -   User details
+        -   Token
 
 -   **Login**
 
-    ```http
-    POST /api/login
-    ```
-
-    Authenticates a user and returns an API token.
+    -   **URL:** `/api/login`
+    -   **Method:** `POST`
+    -   **Request Parameters:**
+        -   `email` (string, required, email)
+        -   `password` (string, required, min: 8)
+    -   **Response:**
+        -   Status: success
+        -   Message: Login successful
+        -   User details
+        -   Token
 
 -   **Logout**
-
-    ```http
-    POST /api/logout
-    ```
-
-    Logs out the authenticated user. Requires authentication.
+    -   **URL:** `/api/logout`
+    -   **Method:** `POST`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Successfully logged out
 
 ### Authors
 
 -   **Get All Authors**
 
-    ```http
-    GET /api/authors
-    ```
+    -   **URL:** `/api/authors`
+    -   **Method:** `GET`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Authors retrieved successfully
+        -   Authors data
 
-    Retrieves a list of all authors. Requires authentication.
+-   **Get Author by ID**
 
--   **Store Author**
+    -   **URL:** `/api/authors/{id}`
+    -   **Method:** `GET`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Author details fetched successfully
+        -   Author data
 
-    ```http
-    POST /api/authors/store
-    ```
+-   **Create Author**
 
-    Creates a new author. Requires authentication.
-
--   **Show Author**
-
-    ```http
-    GET /api/authors/show/{id}
-    ```
-
-    Retrieves details of a specific author by ID. Requires authentication.
-
--   **Edit Author**
-
-    ```http
-    GET /api/authors/edit/{id}
-    ```
-
-    Retrieves author data for editing by ID. Requires authentication.
+    -   **URL:** `/api/authors`
+    -   **Method:** `POST`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Request Parameters:**
+        -   `name` (string, required)
+        -   `bio` (nullable, string)
+    -   **Response:**
+        -   Status: success
+        -   Message: Author created successfully
+        -   Author data
 
 -   **Update Author**
 
-    ```http
-    POST /api/authors/update/{id}
-    ```
-
-    Updates a specific author by ID. Requires authentication.
+    -   **URL:** `/api/authors/{id}`
+    -   **Method:** `POST`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Request Parameters:**
+        -   `name` (string, required)
+        -   `bio` (nullable, string)
+    -   **Response:**
+        -   Status: success
+        -   Message: Author updated successfully
+        -   Author data
 
 -   **Delete Author**
-
-    ```http
-    DELETE /api/authors/delete/{id}
-    ```
-
-    Deletes a specific author by ID. Requires authentication.
+    -   **URL:** `/api/authors/{id}`
+    -   **Method:** `DELETE`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Author deleted successfully
 
 ### Books
 
 -   **Get All Books**
 
-    ```http
-    GET /api/books
-    ```
+    -   **URL:** `/api/books`
+    -   **Method:** `GET`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Books fetched successfully
+        -   Books data
 
-    Retrieves a list of all books. Requires authentication.
+-   **Get Book by ID**
 
--   **Store Book**
+    -   **URL:** `/api/books/{id}`
+    -   **Method:** `GET`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Book details fetched successfully
+        -   Book data
 
-    ```http
-    POST /api/books/store
-    ```
+-   **Create Book**
 
-    Creates a new book. Requires authentication.
-
--   **Show Book**
-
-    ```http
-    GET /api/books/show/{id}
-    ```
-
-    Retrieves details of a specific book by ID. Requires authentication.
-
--   **Edit Book**
-
-    ```http
-    GET /api/books/edit/{id}
-    ```
-
-    Retrieves book data for editing by ID. Requires authentication.
+    -   **URL:** `/api/books`
+    -   **Method:** `POST`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Request Parameters:**
+        -   `title` (string, required, max: 255)
+        -   `description` (nullable, string)
+        -   `authors` (required, array)
+        -   `authors.*` (exists:authors,id)
+    -   **Response:**
+        -   Status: success
+        -   Message: Book created successfully
+        -   Book data
 
 -   **Update Book**
 
-    ```http
-    POST /api/books/update/{id}
-    ```
-
-    Updates a specific book by ID. Requires authentication.
+    -   **URL:** `/api/books/{id}`
+    -   **Method:** `POST`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Request Parameters:**
+        -   `title` (string, required, max: 255)
+        -   `description` (nullable, string)
+        -   `authors` (required, array)
+        -   `authors.*` (exists:authors,id)
+    -   **Response:**
+        -   Status: success
+        -   Message: Book updated successfully
+        -   Book data
 
 -   **Delete Book**
+    -   **URL:** `/api/books/{id}`
+    -   **Method:** `DELETE`
+    -   **Headers:**
+        -   `Authorization: Bearer {token}`
+    -   **Response:**
+        -   Status: success
+        -   Message: Book deleted successfully
 
-    ```http
-    DELETE /api/books/delete/{id}
-    ```
+## Conclusion
 
-    Deletes a specific book by ID. Requires authentication.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+-   This API provides comprehensive endpoints to manage authors and books in a library system.
+-   Ensure to include the Authorization header with the Bearer token for protected routes.
